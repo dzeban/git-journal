@@ -24,11 +24,6 @@ Setup journal for your git repo
 This will create "journal" directory inside your repo and add "journal" section
 to your repo config (not global, of course).
 
-If you already have "journal" dir you can supply differen name like "notes" this
-way:
-
-	git journal init notes
-
 "journal" directory is a git repo itself and it is not tracked by your parent
 repo, so you don't have to modify gitignore.
 
