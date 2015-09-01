@@ -1,0 +1,151 @@
+#!/bin/sh
+
+usage() 
+{
+    echo "Usage: git journal [<subcommand>]"
+    echo
+    echo "With no subcommand shows full journal"
+    echo
+    echo "Journal records are normal git commits so you can do"
+    echo "whatever you want with it, e.g. merge/grep/reset"
+    echo
+    echo "Available subcommands:"
+    echo "  init    Initialize journal in current git repo"
+    echo "  add     Add new record to the journal"
+    echo "  edit    Edit last entry"
+    echo
+}
+
+FORMAT_STRING="'%w(,0,0)%Cred%aD%Creset %Cgreen%d%Creset %nAuthor: %an <%aE>%n%n%w(,4,4)%s%n%n%b'"
+PRETTY_FORMAT="--pretty=format:$FORMAT_STRING"
+LOG_OPTS="--graph --topo-order --all $PRETTY_FORMAT"
+JOURNAL_NAME="journal"
+CONFIG_MAGIC=16278263
+
+# Check if current dir is git repo
+is_git_repo()
+{
+    git rev-parse --is-inside-work-tree > /dev/null 2>&1
+    return $?
+}
+
+# Check if current dir is a journal repo by checking journal.magic value in config
+is_journal()
+{
+    local magic=$(git config --get journal.magic)
+    if [ ! -z $magic ] && [ $magic -eq $CONFIG_MAGIC ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Get journal directory from parent repo config
+get_journal_dir()
+{
+    local dir=$(git config --get journal.dir)
+    echo $dir
+}
+
+# "git journal" implementation
+journal_list()
+{
+    if is_git_repo && ! is_journal; then
+        cd $(get_journal_dir)
+    fi
+
+    eval git log $LOG_OPTS
+
+    if is_git_repo && ! is_journal; then
+        cd -
+    fi
+}
+
+# "git journal init" implementation
+journal_init()
+{
+    git init $JOURNAL_NAME
+
+    local is_repo=$(is_git_repo)
+
+    # Set journal path in parent repo config
+    if is_git_repo; then
+        git config --local --add journal.dir $JOURNAL_NAME
+    fi
+
+    # Set magic in journal repo config
+    cd $JOURNAL_NAME
+    git config --local --add journal.magic $CONFIG_MAGIC
+    cd -
+}
+
+# "git journal add" implementation
+journal_add()
+{
+    if is_git_repo && ! is_journal; then
+        cd $(get_journal_dir)
+    fi
+
+    if is_journal; then
+        git commit --allow-empty
+    fi
+
+    if is_git_repo && ! is_journal; then
+        cd -
+    fi
+}
+
+# "git journal edit" implementation
+journal_edit()
+{
+    if is_git_repo && ! is_journal; then
+        cd $(get_journal_dir)
+    fi
+
+    if is_journal; then
+        git commit --allow-empty --amend
+    fi
+
+    if is_git_repo && ! is_journal; then
+        cd -
+    fi
+}
+
+# Generic options parsing
+while getopts ":h" opt; do
+    case $opt in
+        h)
+            usage
+            exit 0
+            ;;
+
+        # Do not check for invalid option here, 
+        # we have subcommands.
+    esac
+done
+
+subcommand=$1; shift
+case "$subcommand" in
+    "")
+        journal_list
+        exit 0
+        ;;
+    init)
+        journal_init
+        exit 0
+        ;;
+    add)
+        journal_add
+        exit 0
+        ;;
+    edit)
+        journal_edit
+        exit 0
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
+esac
+
+# vim: expandtab: sw=4: ts=4:
