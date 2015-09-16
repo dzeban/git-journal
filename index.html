@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>git journal by dzeban</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>git journal</h1>
+        <p>Journalling project development with the power of git</p>
+
+        <p class="view"><a href="https://github.com/dzeban/git-journal">View the Project on GitHub <small>dzeban/git-journal</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/dzeban/git-journal/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/dzeban/git-journal/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/dzeban/git-journal">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="git-journal" class="anchor" href="#git-journal" aria-hidden="true"><span class="octicon octicon-link"></span></a>Git Journal</h1>
+
+<h2>
+<a id="journalling-project-development-with-the-power-of-git" class="anchor" href="#journalling-project-development-with-the-power-of-git" aria-hidden="true"><span class="octicon octicon-link"></span></a>Journalling project development with the power of "git"</h2>
+
+<p>Tired of piles of notes spread across txt files, emails and TODOs?
+With git-journal you can organize your ideas in a neat way that:</p>
+
+<ul>
+<li>tracks history</li>
+<li>allows you to make branches and not forget about what you've done before</li>
+<li>trace back your though process</li>
+<li>allow you to merge successive ideas into mainstream</li>
+<li>gives you a whole lot of possibilities that git gives you</li>
+</ul>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Just issue "make install". It will simply copy "git-journal" script into "/usr/local/bin".
+To uninstall just do "make uninstall".</p>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Setup journal for your git repo</p>
+
+<pre><code>git journal init [journal dir]
+</code></pre>
+
+<p>This will create journal directory inside your repo and add "journal" section
+to your repo config (not global, of course). If you don't specify "journal dir"
+argument there will be created "journal" directory by default.</p>
+
+<p>If you already have journal repo hosted elsewhere, you can clone it:</p>
+
+<pre><code>git journal clone [repo path] [journal dir]
+</code></pre>
+
+<p>"journal" directory is a git repo itself and it is not tracked by your parent
+repo, so you don't have to modify gitignore.</p>
+
+<p>The new commands for "journal mode" of git are:</p>
+
+<ul>
+<li>git journal add</li>
+<li>git journal edit</li>
+</ul>
+
+<p>These are just wrappers around "git commit" with some sanity checks.</p>
+
+<p>Adding a new record to your journal is a simple</p>
+
+<pre><code>git journal add
+</code></pre>
+
+<p>This will invoke a text editor where you can write and edit a message.</p>
+
+<p>Journal records are commits inside "journal" repository with a notable
+exceptions:</p>
+
+<ul>
+<li>It does NOT change containing parent repo</li>
+<li>It does NOT create any files (there are no tree objects)</li>
+<li>It's a same old git history that you can play with</li>
+</ul>
+
+<p>If your project got a new side idea just go to "journal" repo and branch!</p>
+
+<pre><code>cd journal
+git checkout -b what-if
+</code></pre>
+
+<p>Later you can merge it back as usual</p>
+
+<pre><code>git checkout master
+git merge --no-ff what-if
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/dzeban">dzeban</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
