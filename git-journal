@@ -9,17 +9,21 @@ usage()
     echo "Journal records are normal git commits so you can do"
     echo "whatever you want with it, e.g. merge/grep/reset"
     echo
-    echo "Available subcommands:"
-    echo "  init    Initialize journal in current git repo"
-    echo "  add     Add new record to the journal"
-    echo "  edit    Edit last entry"
+    echo "Subcommands"
+    echo "  Creating journal:"
+    echo "    init  [dir]  Initialize journal in current git repo"
+    echo "    clone [dir]  Clone journal"
+    echo
+    echo "  Working with records:"
+    echo "    add  Add new record to the journal"
+    echo "    edit Edit last entry"
     echo
 }
 
 FORMAT_STRING="'%w(,0,0)%Cred%aD%Creset %Cgreen%d%Creset %nAuthor: %an <%aE>%n%n%w(,4,4)%s%n%n%b'"
 PRETTY_FORMAT="--pretty=format:$FORMAT_STRING"
 LOG_OPTS="--graph --topo-order --all $PRETTY_FORMAT"
-JOURNAL_NAME="journal"
+DEFAULT_JOURNAL_NAME="journal"
 CONFIG_MAGIC=16278263
 
 # Check if current dir is git repo
@@ -61,12 +65,9 @@ journal_list()
     fi
 }
 
-# "git journal init" implementation
-journal_init()
+journal_config()
 {
-    git init $JOURNAL_NAME
-
-    local is_repo=$(is_git_repo)
+    JOURNAL_NAME=$1
 
     # Set journal path in parent repo config
     if is_git_repo; then
@@ -77,6 +78,32 @@ journal_init()
     cd $JOURNAL_NAME
     git config --local --add journal.magic $CONFIG_MAGIC
     cd -
+}
+
+# "git journal init" implementation
+journal_init()
+{
+    if [ $# -ne 0 ]; then
+        DIR=$1
+    else
+        DIR=$DEFAULT_JOURNAL_NAME
+    fi
+    git init $DIR
+    journal_config $DIR
+}
+
+# "git journal clone" implementation
+journal_clone()
+{
+    REPO=$1
+    if [ $# -gt 1 ]; then
+        DIR=$2
+    else
+        DIR=$DEFAULT_JOURNAL_NAME
+    fi
+
+    git clone $REPO $DIR
+    journal_config $DIR
 }
 
 # "git journal add" implementation
@@ -131,7 +158,11 @@ case "$subcommand" in
         exit 0
         ;;
     init)
-        journal_init
+        journal_init $*
+        exit 0
+        ;;
+    clone)
+        journal_clone $*
         exit 0
         ;;
     add)

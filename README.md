@@ -19,10 +19,11 @@ Usage
 
 Setup journal for your git repo
 
-	git journal init
+	git journal init [journal dir]
 
-This will create "journal" directory inside your repo and add "journal" section
-to your repo config (not global, of course).
+This will create journal directory inside your repo and add "journal" section
+to your repo config (not global, of course). If you don't specify "journal dir"
+argument there will be created "journal" directory by default.
 
 "journal" directory is a git repo itself and it is not tracked by your parent
 repo, so you don't have to modify gitignore.
